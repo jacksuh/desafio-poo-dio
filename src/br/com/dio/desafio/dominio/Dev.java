@@ -2,6 +2,7 @@ package br.com.dio.desafio.dominio;
 
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 //Set - permitie adicionar apenas elementos unicos.
@@ -12,12 +13,27 @@ public class Dev {
     private Set<Conteudo> conteudosConcluidos = new HashSet<>();
 
 
-    public void inscreverBootcamp(Bootcamp bootcamp){}
+    public void inscreverBootcamp(Bootcamp bootcamp){
+        this.conteudoInscritos.addAll(bootcamp.getConteudos());
+        bootcamp.getDevsInscritos().add(this);
+    }
 
 
-    public void progredir(){}
+    public void progredir(){
+        Optional<Conteudo> conteudo = this.conteudoInscritos.stream().findFirst();
+        if(conteudo.isPresent()){
+            this.conteudosConcluidos.add(conteudo.get());
+            this.conteudoInscritos.remove(conteudo.get());
+        }else {
+            System.err.println("Você não esta matriculado em nenhum conteúdo");
+        }
+    }
 
-    public void calcularTotalXp(){
+    public double calcularTotalXp(){
+       return this.conteudosConcluidos
+                .stream()
+                .mapToDouble(conteudo ->conteudo.calcularXp())
+                .sum();
     }
 
 
